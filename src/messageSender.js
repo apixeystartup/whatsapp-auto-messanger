@@ -48,59 +48,54 @@ async function getMessages(contact) {
 }
 
 async function sendSMS(phone, message) {
-  const provider = process.env.SMS_PROVIDER || 'twilio';
+  const apiKey = process.env.TEXTBEE_API_KEY;
+  const deviceId = process.env.TEXTBEE_DEVICE_ID;
 
-  if (provider === 'twilio') {
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const fromNumber = process.env.TWILIO_FROM_NUMBER;
-
-    if (!accountSid || !authToken || !fromNumber) {
-      return { success: false, error: 'Twilio not configured. Set TWILIO_* in .env' };
-    }
-
-    try {
-      const https = require('https');
-      const querystring = require('querystring');
-
-      const postData = querystring.stringify({
-        To: `+${phone}`,
-        From: fromNumber,
-        Body: message,
-      });
-
-      return new Promise((resolve) => {
-        const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
-        const req = https.request({
-          hostname: 'api.twilio.com',
-          path: `/2010-04-01/Accounts/${accountSid}/Messages.json`,
-          method: 'POST',
-          headers: {
-            'Authorization': `Basic ${auth}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': postData.length,
-          },
-        }, (res) => {
-          let data = '';
-          res.on('data', (chunk) => data += chunk);
-          res.on('end', () => {
-            if (res.statusCode === 201 || res.statusCode === 200) {
-              resolve({ success: true });
-            } else {
-              resolve({ success: false, error: `Twilio error: ${res.statusCode}` });
-            }
-          });
-        });
-        req.on('error', (err) => resolve({ success: false, error: err.message }));
-        req.write(postData);
-        req.end();
-      });
-    } catch (err) {
-      return { success: false, error: err.message };
-    }
+  if (!apiKey || !deviceId) {
+    return { success: false, error: 'textbee not configured. Set TEXTBEE_API_KEY and TEXTBEE_DEVICE_ID in .env' };
   }
 
-  return { success: false, error: `Unknown SMS provider: ${provider}` };
+  try {
+    const https = require('https');
+
+    const postData = JSON.stringify({
+      recipients: [`+${phone}`],
+      message: message,
+    });
+
+    return new Promise((resolve) => {
+      const req = https.request({
+        hostname: 'api.textbee.dev',
+        path: `/api/v1/gateway/devices/${deviceId}/send-sms`,
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(postData),
+        },
+      }, (res) => {
+        let data = '';
+        res.on('data', (chunk) => data += chunk);
+        res.on('end', () => {
+          try {
+            const body = JSON.parse(data);
+            if (res.statusCode === 200 || res.statusCode === 201) {
+              resolve({ success: true });
+            } else {
+              resolve({ success: false, error: `textbee error: ${body.message || body.error || data}` });
+            }
+          } catch {
+            resolve({ success: false, error: `textbee invalid response: ${data}` });
+          }
+        });
+      });
+      req.on('error', (err) => resolve({ success: false, error: err.message }));
+      req.write(postData);
+      req.end();
+    });
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
 }
 
 module.exports = { loadTemplate, saveTemplate, personalizeTemplate, getMessages, translateText, sendSMS };
