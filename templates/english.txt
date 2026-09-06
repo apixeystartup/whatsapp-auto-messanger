@@ -1,0 +1,17 @@
+Hello
+We are a leading provider of digital solutions at Apixey Pvt Ltd. We offer web development, mobile apps and IT consulting services. 
+
+We are aware of your company ({company}) and we believe that our services will help you grow your business online. 
+
+Our Services: 
+- Website Design & Development 
+- Mobile App Development (Android & iOS) 
+- Digital Marketing & SEO 
+- Custom software solutions 
+
+We'd love to discuss how we can help {company} achieve its digital goals. 
+
+Please contact us for a free consultation. 
+
+Greetings, 
+Team Apixey Pvt Ltd

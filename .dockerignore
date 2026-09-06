@@ -1,0 +1,8 @@
+node_modules
+session
+uploads
+logs
+.env
+.git
+.gitignore
+*.md

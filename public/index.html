@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apixey - WhatsApp Auto Messenger</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>WhatsApp Auto Messenger</h1>
+      <p class="subtitle">Send bulk WhatsApp messages to your pre-clients</p>
+    </header>
+
+    <div class="status-bar">
+      <span id="statusDot" class="status-dot disconnected"></span>
+      <span id="statusText">Connecting...</span>
+    </div>
+
+    <div class="sections">
+
+      <section id="qrSection" class="card">
+        <h2>WhatsApp Connection</h2>
+        <div id="qrContainer" class="qr-container">
+          <div class="spinner"></div>
+          <p>Generating QR code...</p>
+        </div>
+        <div id="connectedMsg" class="connected-msg hidden">
+          <span class="checkmark">&#10003;</span> WhatsApp Connected
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Upload Excel File</h2>
+        <p class="hint">Required columns: <strong>Phone</strong>, <strong>Company</strong> | Optional: <strong>Name</strong></p>
+        <div id="dropZone" class="drop-zone">
+          <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+          <div class="drop-zone-content">
+            <span class="upload-icon">&#128228;</span>
+            <p>Drag & drop your Excel file here</p>
+            <p class="small">or click to browse</p>
+            <button id="browseBtn" class="btn btn-outline">Browse File</button>
+          </div>
+        </div>
+        <div id="fileInfo" class="file-info hidden">
+          <span id="fileName"></span>
+          <button id="removeFile" class="btn-remove">&times;</button>
+        </div>
+        <button id="sendBtn" class="btn btn-primary" disabled>Send Messages</button>
+      </section>
+
+      <section class="card">
+        <h2>Message Templates</h2>
+        <p class="hint">Edit either template and click translate to sync. Placeholders: <code>{name}</code> <code>{company}</code> <code>{greeting}</code> <code>{business_name}</code> <code>{date}</code></p>
+        <div class="template-grid">
+          <div class="template-box">
+            <label>English</label>
+            <textarea id="englishTemplate" rows="10" placeholder="Write in English..."></textarea>
+            <button id="translateToTelugu" class="btn btn-small">Translate to Telugu &darr;</button>
+          </div>
+          <div class="template-box">
+            <label>Telugu</label>
+            <textarea id="teluguTemplate" rows="10" placeholder="Telugu translation..."></textarea>
+            <button id="translateToEnglish" class="btn btn-small">Translate to English &uarr;</button>
+          </div>
+        </div>
+        <div class="template-actions">
+          <button id="saveTemplates" class="btn btn-primary">Save Templates</button>
+          <button id="previewBtn" class="btn btn-outline">Preview Message</button>
+        </div>
+      </section>
+
+      <section id="progressSection" class="card hidden">
+        <h2>Sending Progress</h2>
+        <div class="progress-bar-container">
+          <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+        </div>
+        <div class="progress-stats">
+          <span>WhatsApp: <strong id="sentCount">0</strong></span>
+          <span>SMS: <strong id="smsCount">0</strong></span>
+          <span>Failed: <strong id="failedCount">0</strong></span>
+          <span>Total: <strong id="totalCount">0</strong></span>
+        </div>
+        <p id="currentContact" class="current-contact"></p>
+        <div id="resultsContainer" class="results-container hidden">
+          <h3>Detailed Results</h3>
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th>Company</th>
+                <th>Phone</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Reason</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+        <div id="errorLog" class="error-log hidden"></div>
+      </section>
+
+      <section id="previewSection" class="card hidden">
+        <h2>Message Preview</h2>
+        <div id="previewContent" class="preview-content"></div>
+        <button id="closePreview" class="btn btn-outline">Close</button>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
